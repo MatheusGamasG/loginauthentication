@@ -16,11 +16,15 @@ Com o Node instalado, baixe as dependências necessárias na pasta clonada com o
 npm install
 ```
 
+Conecte com seu banco de dados alterando o arquivo db.ts e alterando a string para a conexão com o seu database.
+
 Para inicializar o servidor (por padrão, na porta local 3000) rode com o npm:
 
 ```
 npm run dev
 ```
+
+Enjoy 😋
 
 ## Tecnologias utilizadas:
 
