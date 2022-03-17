@@ -1,31 +1,46 @@
 import { Router, Response, Request, NextFunction } from 'express';
 import StatusCodes from 'http-status-codes';
+import userRepository from '../repositories/user.repository';
 
 
 const usersRout = Router();
 
-usersRout.get('/users', (req :Request, res :Response, next :NextFunction) => {
-    const users = [ {username: 'Renan'}];
+usersRout.get('/users', async (req :Request, res :Response, next :NextFunction) => {
+    const users = await userRepository.findAllUsers();
     res.status(StatusCodes.OK).send(users);
 })
 
-usersRout.get('/users/:uuid', (req :Request, res:Response, next :NextFunction) => {
+usersRout.get('/users/:uuid', async (req :Request, res:Response, next :NextFunction) => {
+    try {
     const uuid = req.params.uuid;
-    res.status(StatusCodes.OK).send({ uuid });
+    const user = await userRepository.findById(uuid);
+    res.status(StatusCodes.OK).send(user);
+    } catch(error) {
+        next(error);
+    }
 })
 
-usersRout.post('/users/', (req :Request, res: Response, next :NextFunction) => {
+usersRout.post('/users/', async (req :Request, res: Response, next :NextFunction) => {
     const newUser = req.body;
-    res.status(StatusCodes.CREATED).send();
+    const uuid = await userRepository.create(newUser);
+
+    res.status(StatusCodes.CREATED).send(uuid);
 })
 
-usersRout.put('/users/:uuid', (req :Request<{ uuid:string }>, res: Response, next :NextFunction) => {
+usersRout.put('/users/:uuid', async (req :Request<{ uuid:string }>, res: Response, next :NextFunction) => {
     const uuid = req.params.uuid;
+    const modifiedUser = req.body;
+
+    modifiedUser.uuid = uuid;
+
+    await userRepository.update(modifiedUser);
 
     res.status(StatusCodes.OK).send();
 })
 
-usersRout.delete('/users/:uuid', (req :Request < { uuid : string } >, res: Response, next :NextFunction) => {
+usersRout.delete('/users/:uuid', async (req :Request < { uuid : string } >, res: Response, next :NextFunction) => {
+    const uuid = req.params.uuid;
+    await userRepository.remove(uuid);
     res.sendStatus(StatusCodes.OK);
 })
 
